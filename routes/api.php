@@ -15,6 +15,7 @@ use Illuminate\Http\Request;
 
 Route::post('/novocontato','AgendaController@novoContato');
 Route::post('/atualizacontato','AgendaController@atualizaContato');
+Route::post('/atualizamensagem','AgendaController@atualizaMensagem');
 Route::get('/listacontato', 'AgendaController@listaContato');
 Route::get('/apagacontato/{idContato}','AgendaController@apagaContato');
 Route::get('/listamensagem/{idMensagem}','AgendaController@listaMensagem');

@@ -17,7 +17,7 @@ class Contato extends Model
     private $rules = array(
         'nome' => 'required|min:3|max:30',
         'sobrenome' => 'required|min:2|max:100',
-        'email' => 'required|min:5|max:100|unique:contatos,email',
+        'email' => 'required|min:5|max:100',
         'telefone' => 'required',
     );
 
@@ -28,7 +28,6 @@ class Contato extends Model
         'telefone.required' => 'Telefone obrigatorio',
         'email.min' => 'Minimo 5 caracteres',
         'email.max' => 'Maximo 100 caracteres',
-        'email.unique' => 'E-mail ja cadastrado',
         'nome.min' => 'Minimo 3 caracteres',
         'nome.max' => 'Maximo 100 caracteres',
         'sobrenome.min' => 'Minimo 2 caracteres',

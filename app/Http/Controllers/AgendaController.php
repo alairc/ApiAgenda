@@ -15,78 +15,63 @@ class AgendaController extends Controller
         $obContato = new Contato();
 
         if(!$obContato->validate($dados)){
-            $response = response()->json(
-                [
-                    'response' => [
-                        'contato' => $obContato->errors()
-                    ]
-                ], 201
-            );
-            return $response;
+            return $this->returnJson('contato',$obContato->errors(),201);
         }
         $obContato->fill($dados);
         $obContato->save();
 
         if($obContato->id){
-            $response = response()->json(
-                [
-                    'response' => [
-                        'contato' => $obContato->id
-                    ]
-                ], 201
-            );
-
-            return $response;
+            return $this->returnJson('contato',$obContato->id,200);
         }
-        return $response = response()->json(
-            [
-                'response' => [
-                    'contato' => false
-                ]
-            ], 201
-        );
+        return $this->returnJson('contato',false,200);
     }
 
-    public function atualizaContato(Request $req){
-        $error = $req->validate([
-            'id' => 'required',
-            'nome' => 'required|min:3|max:30',
-            'sobrenome' => 'required|min:2|max:100',
-            'email' => 'required|min:5|max:100|unique:contatos,email',
-            'telefone' => 'required'
-        ]);
+    public function atualizaContato(){
+        $dados = Input::all();
+        $obContato = new Contato();
 
-        if($error){
+        if(!$obContato->validate($dados)){
+            return $this->returnJson('contato',$obContato->errors(),201);
+        }
+
+        if(isset($dados['id'])) {
+            $obNewUser = $obContato->find($dados['id']);
+            if ($obNewUser) {
+                $obNewUser->fill($dados);
+                $obNewUser->update($dados);
+                return $this->returnJson('contato',true,200);
+            }
+        }
+
+        return $this->returnJson('contato',false,200);
+    }
+
+    public function atualizaMensagem(){
+        $dados = Input::all();
+        $obMensagem = new Mensagem();
+
+        if(!$obMensagem->validate($dados)){
             $response = response()->json(
                 [
                     'response' => [
-                        'contato' => $error
+                        'mensagem' => $obMensagem->errors()
                     ]
                 ], 201
             );
-
             return $response;
         }
 
-        $contato = Contato::updated($req->all());
-        if($contato->id){
-            $response = response()->json(
-                [
-                    'response' => [
-                        'contato' => true
-                    ]
-                ], 201
-            );
+        if(isset($dados['id'])) {
+            $obNewMsg = $obMensagem->find($dados['id']);
+            if ($obNewMsg) {
+                $obNewMsg->fill($dados);
+                $obNewMsg->update($dados);
 
-            return $response;
+                return $this->returnJson('mensagem',true,200);
+            }
         }
-        return $response = response()->json(
-            [
-                'response' => [
-                    'contato' => false
-                ]
-            ], 201
-        );
+
+        return $this->returnJson('mensagem',false,200);
     }
 
     public function listaContato(){
@@ -104,24 +89,10 @@ class AgendaController extends Controller
                 $return[$c]['telefone'] = $contato->teleofne;
                 $c++;
             }
+            return $this->returnJson('contato',$return,201);
 
-            $response = response()->json(
-                [
-                    'response' => [
-                        'contatos' => $return
-                    ]
-                ], 201
-            );
-
-            return $response;
         }
-        return $response = response()->json(
-            [
-                'response' => [
-                    'contatos' => false
-                ]
-            ], 200
-        );
+        return $this->returnJson('contato',false,200);
     }
 
     public function listaMensagem($idContato){
@@ -132,24 +103,10 @@ class AgendaController extends Controller
                 foreach ($contato->mensagens as $mensagem) {
                     $return['mensagens'][] = $mensagem->mensagem;
                 }
-                $response = response()->json(
-                    [
-                        'response' => [
-                            'contato' => $return
-                        ]
-                    ], 201
-                );
-
-                return $response;
+                return $this->returnJson('mensagem',$return,201);
             }
         }
-        return $response = response()->json(
-            [
-                'response' => [
-                    'contato' => false
-                ]
-            ], 201
-        );
+        return $this->returnJson('mensagem',false,200);
     }
 
     public function novaMensagem(Request $req){
@@ -157,74 +114,43 @@ class AgendaController extends Controller
         $obMensagem = new Mensagem();
 
         if(!$obMensagem->validate($dados)){
-            $response = response()->json(
-                [
-                    'response' => [
-                        'contato' => $obMensagem->errors()
-                    ]
-                ], 201
-            );
-            return $response;
+            return $this->returnJson('mensagem',$obMensagem->errors(),201);
         }
         $obMensagem->fill($dados);
         $obMensagem->save();
         if($obMensagem->id){
-            $response = response()->json(
-                [
-                    'response' => [
-                        'contato' => $obMensagem->id
-                    ]
-                ], 201
-            );
-
-            return $response;
+            return $this->returnJson('mensagem',$obMensagem->id,200);
         }
-        return $response = response()->json(
-            [
-                'response' => [
-                    'contato' => false
-                ]
-            ], 201
-        );
+        return $this->returnJson('mensagem',false,200);
     }
 
     public function apagaContato($idContato){
         $delete = Contato::where('id', $idContato)->delete();
 
         if($delete){
-            $response = response()->json(
-                [
-                    'response' => [
-                        'contato' => true
-                    ]
-                ], 201
-            );
-
-            return $response;
+            return $this->returnJson('contato',true,200);
         }
+        return $this->returnJson('contato',false,200);
     }
 
     public function apagaMensagem($idMensagem){
         $delete = Mensagem::where('id', $idMensagem)->delete();
 
         if($delete) {
-            $response = response()->json(
-                [
-                    'response' => [
-                        'mensagem' => true
-                    ]
-                ], 201
-            );
-
-            return $response;
+            return $this->returnJson('mensagem',true,200);
         }
+        return $this->returnJson('mensagem',false,200);
+    }
+
+    public function returnJson($key, $value, $statuscode){
         return $response = response()->json(
             [
                 'response' => [
-                    'contato' => false
+                    $key => $value
                 ]
-            ], 201
+            ], $statuscode
         );
     }
+
 
 }
