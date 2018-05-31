@@ -5,40 +5,33 @@ namespace App\Http\Controllers;
 use App\Contato;
 use App\Mensagem;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Input;
+use Illuminate\Support\Facades\Validator;
 
 class AgendaController extends Controller
 {
-    public function __construct()
-    {
-        header('Access-Control-Allow-Origin: *');
-    }
+    public function novoContato(){
+        $dados = Input::all();
+        $obContato = new Contato();
 
-    public function novoContato(Request $req){
-        $error = $req->validate([
-                                'nome' => 'required|min:3|max:30',
-                                'sobrenome' => 'required|min:2|max:100',
-                                'email' => 'required|min:5|max:100|unique:contatos,email',
-                                'telefone' => 'required'
-                            ]);
-
-        if($error){
+        if(!$obContato->validate($dados)){
             $response = response()->json(
                 [
                     'response' => [
-                        'contato' => $error
+                        'contato' => $obContato->errors()
                     ]
                 ], 201
             );
-
             return $response;
         }
+        $obContato->fill($dados);
+        $obContato->save();
 
-        $contato = Contato::create($req->all());
-        if($contato->id){
+        if($obContato->id){
             $response = response()->json(
                 [
                     'response' => [
-                        'contato' => $contato->id
+                        'contato' => $obContato->id
                     ]
                 ], 201
             );
@@ -127,13 +120,13 @@ class AgendaController extends Controller
                 'response' => [
                     'contatos' => false
                 ]
-            ], 201
+            ], 200
         );
     }
 
     public function listaMensagem($idContato){
         $contato = Contato::find($idContato);
-        if($contato->id) {
+        if(isset($contato->id)) {
             if (count($contato->mensagens)) {
                 $return = array();
                 foreach ($contato->mensagens as $mensagem) {
@@ -160,29 +153,26 @@ class AgendaController extends Controller
     }
 
     public function novaMensagem(Request $req){
-        $error = $req->validate([
-            'contato_id' => 'required',
-            'mensagem' => 'required'
-        ]);
+        $dados = Input::all();
+        $obMensagem = new Mensagem();
 
-        if($error){
+        if(!$obMensagem->validate($dados)){
             $response = response()->json(
                 [
                     'response' => [
-                        'mensagem' => $error
+                        'contato' => $obMensagem->errors()
                     ]
                 ], 201
             );
-
             return $response;
         }
-
-        $mensagem = Mensagem::create($req->all());
-        if($mensagem->id){
+        $obMensagem->fill($dados);
+        $obMensagem->save();
+        if($obMensagem->id){
             $response = response()->json(
                 [
                     'response' => [
-                        'contato' => $mensagem->id
+                        'contato' => $obMensagem->id
                     ]
                 ], 201
             );

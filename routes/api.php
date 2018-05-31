@@ -13,6 +13,10 @@ use Illuminate\Http\Request;
 |
 */
 
-Route::middleware('auth:api')->get('/user', function (Request $request) {
-    return $request->user();
-});
+Route::post('/novocontato','AgendaController@novoContato');
+Route::post('/atualizacontato','AgendaController@atualizaContato');
+Route::get('/listacontato', 'AgendaController@listaContato');
+Route::get('/apagacontato/{idContato}','AgendaController@apagaContato');
+Route::get('/listamensagem/{idMensagem}','AgendaController@listaMensagem');
+Route::get('/apagamensagem/{idMensagem}','AgendaController@apagaMensagem');
+Route::post('/novamensagem','AgendaController@novaMensagem');
